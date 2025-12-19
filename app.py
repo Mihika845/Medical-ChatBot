@@ -16,10 +16,10 @@ app = Flask(__name__)
 load_dotenv()
 
 PINECONE_API_KEY=os.environ.get('PINECONE_API_KEY')
-OPENAI_API_KEY=os.environ.get('OPENAI_API_KEY')
+OPENROUTER_API_KEY=os.environ.get('OPENROUTER_API_KEY')
 
 os.environ["PINECONE_API_KEY"] = PINECONE_API_KEY
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+os.environ["OPENAI_API_KEY"] = OPENROUTER_API_KEY
 
 
 embeddings = download_hugging_face_embeddings()
@@ -36,7 +36,12 @@ docsearch = PineconeVectorStore.from_existing_index(
 
 retriever = docsearch.as_retriever(search_type="similarity", search_kwargs={"k":3})
 
-chatModel = ChatOpenAI(model="gpt-4o")
+chatModel = ChatOpenAI(
+    model="meta-llama/llama-3.3-70b-instruct",
+    temperature=0,
+    openai_api_base="https://openrouter.ai/api/v1",
+)
+
 prompt = ChatPromptTemplate.from_messages(
     [
         ("system", system_prompt),
